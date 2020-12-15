@@ -97,10 +97,13 @@ class SaliencyInterpreter:
 
         colored_string += template.format(0, "    Label: {} |".format(instance['label']))
         prob            = instance['prob']
-        color           = matplotlib.colors.rgb2hex(prob_cmap(prob)[-1][:3]) # matplotlib.colors.rgb2hex(prob_cmap(prob)[:3])
+        color           = matplotlib.colors.rgb2hex(prob_cmap(prob)[:3]) # matplotlib.colors.rgb2hex(prob_cmap(prob)[:3])
+        for probs in prob:
+            colored_string += template.format(color, "{:.4f}%".format(probs*100))
+        colored_string += '|'
         
-        for probs in instance['prob']:
-            colored_string += template.format(color, "{:.2f }%".format(probs*100))
+        for grads in instance['grad']:
+            colored_string += template.format(color, "{:.4f}%".format(grads*100))
         colored_string += '|'
         # colored_string += template.format(color, "{}%".format([i*100 for i in instance['prob']])) + '|'
         return colored_string
@@ -126,19 +129,23 @@ class SaliencyInterpreter:
         If your model receive inputs in another way or you computing not like in this example
         simply override this method.
         """
-
-        input_ids      = batch.get('input_ids').to(self.device)
-        attention_mask = batch.get('attention_mask').to(self.device)
+        input_ids      = torch.as_tensor(batch.input_ids).to(self.device).reshape((1, -1)) # batch.get('input_ids').to(self.device)
+        attention_mask = torch.as_tensor(batch.attention_mask).to(self.device).reshape((1, -1)) # batch.get('attention_mask').to(self.device)
         outputs        = self.model(input_ids=input_ids, attention_mask=attention_mask)[0]
 
+        _, _, num_label = outputs.shape
+        """
+        outputs : (batch, seq_length, feat_dim) => (seq_length, feat_dim)
+        labels  : (batch, seq_length)           => (seq_length,)
+        """
+        outputs        = outputs.view(-1, num_label)
         labels         = torch.argmax(outputs, dim=1) # torch.argmax(outputs, dim=1)
         batch_losses   = self.criterion(outputs, labels)
         loss           = torch.mean(batch_losses) # mean average
-
         self.batch_output = [input_ids, outputs]
         return loss
 
-    def update_output(self):
+    def update_output(self, ):
         """
         You can override this method if you want to change the format of outputs (e.g., storing gradients)
         """
@@ -153,20 +160,25 @@ class SaliencyInterpreter:
         ]
 
         embedding_grads = grads.sum(dim=2)
+        
         # norm for each sequence
-        norms = torch.norm(embedding_grads, dim=1, p=1) # need check hyperparameter
+        norms = torch.norm(embedding_grads, dim=1, p=2) # need check hyperparameter
+        
         # normalizing
         for i, norm in enumerate(norms):
             embedding_grads[i] = torch.abs(embedding_grads[i]) / norm
 
         batch_output = []
-
+        
+        # check probs, labels shape
+        labels   = torch.reshape(labels, (1, -1))
+        probs    = torch.reshape(probs, (1, -1))
         iterator = zip(tokens, probs, embedding_grads, labels)
 
         for example_tokens, example_prob, example_grad, example_label in iterator:
             example_dict = dict()
             # as we do it by batches we has a padding so we need to remove it
-            # pdb.set_trace()
+            
             example_tokens = [t for t in example_tokens if t != self.tokenizer.pad_token]
             example_dict['tokens'] = example_tokens
             example_dict['grad']   = example_grad.cpu().tolist()[:len(example_tokens)]

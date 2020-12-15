@@ -33,7 +33,7 @@ class IntegratedGradient(SaliencyInterpreter):
 
             # Scale the embedding by alpha
             output.mul_(alpha)
-
+        
         embedding_layer = self.get_embeddings_layer()
         handle          = embedding_layer.register_forward_hook(forward_hook)
         return handle
@@ -66,4 +66,3 @@ class IntegratedGradient(SaliencyInterpreter):
 
         self.batch_output.append(ig_grads)
 
-            
