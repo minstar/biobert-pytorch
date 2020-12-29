@@ -1,0 +1,159 @@
+12/29/2020 07:24:22 - INFO - transformers.training_args -   PyTorch: setting up devices
+12/29/2020 07:24:22 - WARNING - __main__ -   Process rank: -1, device: cuda:0, n_gpu: 1, distributed training: False, 16-bits training: False
+12/29/2020 07:24:22 - INFO - __main__ -   Training/evaluation parameters TrainingArguments(output_dir='/hdd1/minbyul/output/ner_output//biobert/NCBI-disease-softmax-35-hotflip', overwrite_output_dir=True, do_train=False, do_eval=True, do_predict=True, evaluate_during_training=False, per_device_train_batch_size=8, per_device_eval_batch_size=1, per_gpu_train_batch_size=None, per_gpu_eval_batch_size=None, gradient_accumulation_steps=1, learning_rate=5e-05, weight_decay=0.0, adam_epsilon=1e-08, max_grad_norm=1.0, num_train_epochs=35.0, max_steps=-1, warmup_steps=0, logging_dir='runs/Dec29_07-24-20_gpower_a', logging_first_step=False, logging_steps=500, save_steps=-1, save_total_limit=None, no_cuda=False, seed=1, fp16=False, fp16_opt_level='O1', local_rank=-1, tpu_num_cores=None, tpu_metrics_debug=False, dataloader_drop_last=False)
+12/29/2020 07:24:22 - INFO - transformers.configuration_utils -   loading configuration file /hdd1/minbyul/output/ner_output//biobert/NCBI-disease-softmax-35-removedot/config.json
+12/29/2020 07:24:22 - INFO - transformers.configuration_utils -   Model config BertConfig {
+  "architectures": [
+    "BertForTokenClassification"
+  ],
+  "attention_probs_dropout_prob": 0.1,
+  "gradient_checkpointing": false,
+  "hidden_act": "gelu",
+  "hidden_dropout_prob": 0.1,
+  "hidden_size": 768,
+  "id2label": {
+    "0": "O",
+    "1": "B-bio",
+    "2": "I-bio",
+    "3": "-bio"
+  },
+  "initializer_range": 0.02,
+  "intermediate_size": 3072,
+  "label2id": {
+    "-bio": 3,
+    "B-bio": 1,
+    "I-bio": 2,
+    "O": 0
+  },
+  "layer_norm_eps": 1e-12,
+  "max_position_embeddings": 512,
+  "model_type": "bert",
+  "num_attention_heads": 12,
+  "num_hidden_layers": 12,
+  "pad_token_id": 0,
+  "type_vocab_size": 2,
+  "vocab_size": 28996
+}
+
+12/29/2020 07:24:22 - INFO - transformers.configuration_utils -   loading configuration file /hdd1/minbyul/output/ner_output//biobert/NCBI-disease-softmax-35-removedot/config.json
+12/29/2020 07:24:22 - INFO - transformers.configuration_utils -   Model config BertConfig {
+  "architectures": [
+    "BertForTokenClassification"
+  ],
+  "attention_probs_dropout_prob": 0.1,
+  "gradient_checkpointing": false,
+  "hidden_act": "gelu",
+  "hidden_dropout_prob": 0.1,
+  "hidden_size": 768,
+  "id2label": {
+    "0": "O",
+    "1": "B",
+    "2": "I",
+    "3": "X"
+  },
+  "initializer_range": 0.02,
+  "intermediate_size": 3072,
+  "label2id": {
+    "B": 1,
+    "I": 2,
+    "O": 0,
+    "X": 3
+  },
+  "layer_norm_eps": 1e-12,
+  "max_position_embeddings": 512,
+  "model_type": "bert",
+  "num_attention_heads": 12,
+  "num_hidden_layers": 12,
+  "pad_token_id": 0,
+  "type_vocab_size": 2,
+  "vocab_size": 28996
+}
+
+12/29/2020 07:24:22 - INFO - transformers.tokenization_utils_base -   Model name '/hdd1/minbyul/output/ner_output//biobert/NCBI-disease-softmax-35-removedot' not found in model shortcut name list (bert-base-uncased, bert-large-uncased, bert-base-cased, bert-large-cased, bert-base-multilingual-uncased, bert-base-multilingual-cased, bert-base-chinese, bert-base-german-cased, bert-large-uncased-whole-word-masking, bert-large-cased-whole-word-masking, bert-large-uncased-whole-word-masking-finetuned-squad, bert-large-cased-whole-word-masking-finetuned-squad, bert-base-cased-finetuned-mrpc, bert-base-german-dbmdz-cased, bert-base-german-dbmdz-uncased, TurkuNLP/bert-base-finnish-cased-v1, TurkuNLP/bert-base-finnish-uncased-v1, wietsedv/bert-base-dutch-cased). Assuming '/hdd1/minbyul/output/ner_output//biobert/NCBI-disease-softmax-35-removedot' is a path, a model identifier, or url to a directory containing tokenizer files.
+12/29/2020 07:24:22 - INFO - transformers.tokenization_utils_base -   Didn't find file /hdd1/minbyul/output/ner_output//biobert/NCBI-disease-softmax-35-removedot/added_tokens.json. We won't load it.
+12/29/2020 07:24:22 - INFO - transformers.tokenization_utils_base -   Didn't find file /hdd1/minbyul/output/ner_output//biobert/NCBI-disease-softmax-35-removedot/tokenizer.json. We won't load it.
+12/29/2020 07:24:22 - INFO - transformers.tokenization_utils_base -   loading file /hdd1/minbyul/output/ner_output//biobert/NCBI-disease-softmax-35-removedot/vocab.txt
+12/29/2020 07:24:22 - INFO - transformers.tokenization_utils_base -   loading file None
+12/29/2020 07:24:22 - INFO - transformers.tokenization_utils_base -   loading file /hdd1/minbyul/output/ner_output//biobert/NCBI-disease-softmax-35-removedot/special_tokens_map.json
+12/29/2020 07:24:22 - INFO - transformers.tokenization_utils_base -   loading file /hdd1/minbyul/output/ner_output//biobert/NCBI-disease-softmax-35-removedot/tokenizer_config.json
+12/29/2020 07:24:22 - INFO - transformers.tokenization_utils_base -   loading file None
+12/29/2020 07:24:22 - INFO - transformers.modeling_utils -   loading weights file /hdd1/minbyul/output/ner_output//biobert/NCBI-disease-softmax-35-removedot/pytorch_model.bin
+12/29/2020 07:24:24 - INFO - transformers.modeling_utils -   All model checkpoint weights were used when initializing BertForTokenClassification.
+
+12/29/2020 07:24:24 - INFO - transformers.modeling_utils -   All the weights of BertForTokenClassification were initialized from the model checkpoint at /hdd1/minbyul/output/ner_output//biobert/NCBI-disease-softmax-35-removedot.
+If your task is similar to the task the model of the ckeckpoint was trained on, you can already use BertForTokenClassification for predictions without further training.
+12/29/2020 07:24:24 - INFO - filelock -   Lock 140390679026064 acquired on /home/minbyul/github/biobert-pytorch/datasets//NER/NCBI-disease/cached_devel_BertTokenizer_128.lock
+12/29/2020 07:24:24 - INFO - utils.utils_ner -   Loading features from cached file /home/minbyul/github/biobert-pytorch/datasets//NER/NCBI-disease/cached_devel_BertTokenizer_128
+12/29/2020 07:24:24 - INFO - filelock -   Lock 140390679026064 released on /home/minbyul/github/biobert-pytorch/datasets//NER/NCBI-disease/cached_devel_BertTokenizer_128.lock
+12/29/2020 07:24:24 - INFO - filelock -   Lock 140388658137872 acquired on /home/minbyul/github/biobert-pytorch/datasets//NER/NCBI-disease/cached_test_BertTokenizer_128.lock
+12/29/2020 07:24:24 - INFO - utils.utils_ner -   Loading features from cached file /home/minbyul/github/biobert-pytorch/datasets//NER/NCBI-disease/cached_test_BertTokenizer_128
+12/29/2020 07:24:24 - INFO - filelock -   Lock 140388658137872 released on /home/minbyul/github/biobert-pytorch/datasets//NER/NCBI-disease/cached_test_BertTokenizer_128.lock
+12/29/2020 07:24:25 - INFO - __main__ -   *** Adversarial attack on Evaluation Set***
+  0%|          | 0/923 [00:00<?, ?it/s]> /home/minbyul/github/biobert-pytorch/adversarial-attack/hotflip.py(72)_adversarial_tokens()
+-> new_embed_dot_grad = torch.einsum("bij,kj -> bik", (grads, embedding_matrix))
+(Pdb) torch.Size([1, 128])
+(Pdb) False
+(Pdb) True
+(Pdb) (Pdb) tensor([[-0.0265, -0.0074, -0.0290,  ..., -0.0363, -0.0341,  0.0183],
+        [-0.0116,  0.0133, -0.0578,  ..., -0.0236, -0.0681, -0.0066],
+        [ 0.0233,  0.0052, -0.0251,  ..., -0.0698, -0.0221, -0.0255],
+        ...,
+        [-0.0297, -0.0520, -0.0594,  ..., -0.0552, -0.0592,  0.0144],
+        [-0.0454,  0.0151, -0.0613,  ..., -0.0792, -0.0300, -0.0051],
+        [ 0.0303, -0.0056, -0.0408,  ..., -0.0215, -0.0521, -0.0016]],
+       device='cuda:0')
+(Pdb) tensor([[  101, 26660, 11356,  1475,  1110,  3318,  1174,  1105, 10877,  4625,
+          1104,   170,   176, 23851,  1179,   119,   102,     0,     0,     0,
+             0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+             0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+             0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+             0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+             0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+             0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+             0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+             0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+             0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+             0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+             0,     0,     0,     0,     0,     0,     0,     0]],
+       device='cuda:0')
+(Pdb) torch.Size([1, 128, 768])
+(Pdb) False
+(Pdb) torch.Size([128, 4])
+(Pdb) True
+(Pdb) tensor([[[-3.5835e-05,  1.1473e-05,  6.0603e-05,  ...,  1.3630e-04,
+          -3.5518e-05,  6.8961e-05],
+         [ 3.5258e-05,  6.7099e-05,  6.2592e-05,  ...,  9.4243e-05,
+          -1.1729e-07,  8.0946e-05],
+         [ 1.4413e-04,  1.0629e-04,  2.2564e-04,  ...,  1.5570e-04,
+           1.6498e-04,  2.0096e-04],
+         ...,
+         [ 1.1336e-08, -1.9425e-09, -8.3134e-09,  ..., -1.2060e-09,
+           5.4681e-09, -2.6068e-09],
+         [ 3.2567e-09,  3.3921e-09, -1.7128e-09,  ...,  3.0510e-09,
+           1.5336e-09,  2.6154e-09],
+         [ 1.9325e-06,  1.4416e-06, -2.4701e-06,  ...,  3.5695e-07,
+          -1.4155e-07,  1.1639e-06]]], device='cuda:0')
+(Pdb) torch.Size([1, 128, 28996])
+(Pdb) *** RuntimeError: dimension mismatch for operand 1: equation 3 tensor 2
+(Pdb) torch.Size([1, 128, 768])
+(Pdb) torch.Size([28996, 768])
+(Pdb) torch.Size([1, 128])
+(Pdb) torch.Size([1, 128, 768])
+(Pdb) (Pdb) torch.Size([1, 128])
+(Pdb) False
+(Pdb)   0%|          | 0/923 [1:25:58<?, ?it/s]
+Traceback (most recent call last):
+  File "run_ner.py", line 280, in <module>
+    if __name__ == "__main__":
+  File "run_ner.py", line 255, in main
+  File "/home/minbyul/github/biobert-pytorch/adversarial-attack/hotflip.py", line 24, in adversarial_attack
+    self._vanilla_grads(batch)
+  File "/home/minbyul/github/biobert-pytorch/adversarial-attack/hotflip.py", line 72, in _adversarial_tokens
+    src_embeds = embedding_layer(input_ids).detach()
+  File "/home/minbyul/github/biobert-pytorch/adversarial-attack/hotflip.py", line 72, in _adversarial_tokens
+    src_embeds = embedding_layer(input_ids).detach()
+  File "/home/minbyul/anaconda3/envs/biobert-pytorch/lib/python3.7/bdb.py", line 88, in trace_dispatch
+    return self.dispatch_line(frame)
+  File "/home/minbyul/anaconda3/envs/biobert-pytorch/lib/python3.7/bdb.py", line 113, in dispatch_line
+    if self.quitting: raise BdbQuit
+bdb.BdbQuit

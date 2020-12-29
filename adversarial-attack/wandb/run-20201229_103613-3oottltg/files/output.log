@@ -1,0 +1,112 @@
+12/29/2020 10:36:14 - INFO - transformers.training_args -   PyTorch: setting up devices
+12/29/2020 10:36:14 - WARNING - __main__ -   Process rank: -1, device: cuda:0, n_gpu: 1, distributed training: False, 16-bits training: False
+12/29/2020 10:36:14 - INFO - __main__ -   Training/evaluation parameters TrainingArguments(output_dir='/hdd1/minbyul/output/ner_output//biobert/NCBI-disease-softmax-35-hotflip', overwrite_output_dir=True, do_train=False, do_eval=True, do_predict=True, evaluate_during_training=False, per_device_train_batch_size=8, per_device_eval_batch_size=1, per_gpu_train_batch_size=None, per_gpu_eval_batch_size=None, gradient_accumulation_steps=1, learning_rate=5e-05, weight_decay=0.0, adam_epsilon=1e-08, max_grad_norm=1.0, num_train_epochs=35.0, max_steps=-1, warmup_steps=0, logging_dir='runs/Dec29_10-36-13_gpower_a', logging_first_step=False, logging_steps=500, save_steps=-1, save_total_limit=None, no_cuda=False, seed=1, fp16=False, fp16_opt_level='O1', local_rank=-1, tpu_num_cores=None, tpu_metrics_debug=False, dataloader_drop_last=False)
+12/29/2020 10:36:14 - INFO - transformers.configuration_utils -   loading configuration file /hdd1/minbyul/output/ner_output//biobert/NCBI-disease-softmax-35-removedot/config.json
+12/29/2020 10:36:14 - INFO - transformers.configuration_utils -   Model config BertConfig {
+  "architectures": [
+    "BertForTokenClassification"
+  ],
+  "attention_probs_dropout_prob": 0.1,
+  "gradient_checkpointing": false,
+  "hidden_act": "gelu",
+  "hidden_dropout_prob": 0.1,
+  "hidden_size": 768,
+  "id2label": {
+    "0": "O",
+    "1": "B-bio",
+    "2": "I-bio",
+    "3": "-bio"
+  },
+  "initializer_range": 0.02,
+  "intermediate_size": 3072,
+  "label2id": {
+    "-bio": 3,
+    "B-bio": 1,
+    "I-bio": 2,
+    "O": 0
+  },
+  "layer_norm_eps": 1e-12,
+  "max_position_embeddings": 512,
+  "model_type": "bert",
+  "num_attention_heads": 12,
+  "num_hidden_layers": 12,
+  "pad_token_id": 0,
+  "type_vocab_size": 2,
+  "vocab_size": 28996
+}
+
+12/29/2020 10:36:14 - INFO - transformers.configuration_utils -   loading configuration file /hdd1/minbyul/output/ner_output//biobert/NCBI-disease-softmax-35-removedot/config.json
+12/29/2020 10:36:14 - INFO - transformers.configuration_utils -   Model config BertConfig {
+  "architectures": [
+    "BertForTokenClassification"
+  ],
+  "attention_probs_dropout_prob": 0.1,
+  "gradient_checkpointing": false,
+  "hidden_act": "gelu",
+  "hidden_dropout_prob": 0.1,
+  "hidden_size": 768,
+  "id2label": {
+    "0": "O",
+    "1": "B",
+    "2": "I",
+    "3": "X"
+  },
+  "initializer_range": 0.02,
+  "intermediate_size": 3072,
+  "label2id": {
+    "B": 1,
+    "I": 2,
+    "O": 0,
+    "X": 3
+  },
+  "layer_norm_eps": 1e-12,
+  "max_position_embeddings": 512,
+  "model_type": "bert",
+  "num_attention_heads": 12,
+  "num_hidden_layers": 12,
+  "pad_token_id": 0,
+  "type_vocab_size": 2,
+  "vocab_size": 28996
+}
+
+12/29/2020 10:36:14 - INFO - transformers.tokenization_utils_base -   Model name '/hdd1/minbyul/output/ner_output//biobert/NCBI-disease-softmax-35-removedot' not found in model shortcut name list (bert-base-uncased, bert-large-uncased, bert-base-cased, bert-large-cased, bert-base-multilingual-uncased, bert-base-multilingual-cased, bert-base-chinese, bert-base-german-cased, bert-large-uncased-whole-word-masking, bert-large-cased-whole-word-masking, bert-large-uncased-whole-word-masking-finetuned-squad, bert-large-cased-whole-word-masking-finetuned-squad, bert-base-cased-finetuned-mrpc, bert-base-german-dbmdz-cased, bert-base-german-dbmdz-uncased, TurkuNLP/bert-base-finnish-cased-v1, TurkuNLP/bert-base-finnish-uncased-v1, wietsedv/bert-base-dutch-cased). Assuming '/hdd1/minbyul/output/ner_output//biobert/NCBI-disease-softmax-35-removedot' is a path, a model identifier, or url to a directory containing tokenizer files.
+12/29/2020 10:36:14 - INFO - transformers.tokenization_utils_base -   Didn't find file /hdd1/minbyul/output/ner_output//biobert/NCBI-disease-softmax-35-removedot/added_tokens.json. We won't load it.
+12/29/2020 10:36:14 - INFO - transformers.tokenization_utils_base -   Didn't find file /hdd1/minbyul/output/ner_output//biobert/NCBI-disease-softmax-35-removedot/tokenizer.json. We won't load it.
+12/29/2020 10:36:14 - INFO - transformers.tokenization_utils_base -   loading file /hdd1/minbyul/output/ner_output//biobert/NCBI-disease-softmax-35-removedot/vocab.txt
+12/29/2020 10:36:14 - INFO - transformers.tokenization_utils_base -   loading file None
+12/29/2020 10:36:14 - INFO - transformers.tokenization_utils_base -   loading file /hdd1/minbyul/output/ner_output//biobert/NCBI-disease-softmax-35-removedot/special_tokens_map.json
+12/29/2020 10:36:14 - INFO - transformers.tokenization_utils_base -   loading file /hdd1/minbyul/output/ner_output//biobert/NCBI-disease-softmax-35-removedot/tokenizer_config.json
+12/29/2020 10:36:14 - INFO - transformers.tokenization_utils_base -   loading file None
+12/29/2020 10:36:14 - INFO - transformers.modeling_utils -   loading weights file /hdd1/minbyul/output/ner_output//biobert/NCBI-disease-softmax-35-removedot/pytorch_model.bin
+12/29/2020 10:36:16 - INFO - transformers.modeling_utils -   All model checkpoint weights were used when initializing BertForTokenClassification.
+
+12/29/2020 10:36:16 - INFO - transformers.modeling_utils -   All the weights of BertForTokenClassification were initialized from the model checkpoint at /hdd1/minbyul/output/ner_output//biobert/NCBI-disease-softmax-35-removedot.
+If your task is similar to the task the model of the ckeckpoint was trained on, you can already use BertForTokenClassification for predictions without further training.
+12/29/2020 10:36:16 - INFO - filelock -   Lock 140138822515536 acquired on /home/minbyul/github/biobert-pytorch/datasets//NER/NCBI-disease/cached_devel_BertTokenizer_128.lock
+12/29/2020 10:36:16 - INFO - utils.utils_ner -   Loading features from cached file /home/minbyul/github/biobert-pytorch/datasets//NER/NCBI-disease/cached_devel_BertTokenizer_128
+12/29/2020 10:36:16 - INFO - filelock -   Lock 140138822515536 released on /home/minbyul/github/biobert-pytorch/datasets//NER/NCBI-disease/cached_devel_BertTokenizer_128.lock
+12/29/2020 10:36:16 - INFO - filelock -   Lock 140138812111760 acquired on /home/minbyul/github/biobert-pytorch/datasets//NER/NCBI-disease/cached_test_BertTokenizer_128.lock
+12/29/2020 10:36:16 - INFO - utils.utils_ner -   Loading features from cached file /home/minbyul/github/biobert-pytorch/datasets//NER/NCBI-disease/cached_test_BertTokenizer_128
+12/29/2020 10:36:16 - INFO - filelock -   Lock 140138812111760 released on /home/minbyul/github/biobert-pytorch/datasets//NER/NCBI-disease/cached_test_BertTokenizer_128.lock
+12/29/2020 10:36:18 - INFO - __main__ -   *** Adversarial attack on Evaluation Set***
+  0%|          | 0/923 [00:00<?, ?it/s]> /home/minbyul/github/biobert-pytorch/adversarial-attack/hotflip.py(112)_adversarial_tokens()
+-> self.batch_output.append(adv_tokens) # append adversarial token info.
+(Pdb) tensor([[ 3, 16,  5]], device='cuda:0')
+(Pdb) tensor([[ 3, 16,  5]], device='cuda:0')
+(Pdb)   0%|          | 0/923 [01:43<?, ?it/s]
+Traceback (most recent call last):
+  File "run_ner.py", line 281, in <module>
+    main()
+  File "run_ner.py", line 256, in main
+    instances = adversarial.adversarial_attack(eval_dataset)
+  File "/home/minbyul/github/biobert-pytorch/adversarial-attack/hotflip.py", line 26, in adversarial_attack
+    self._adversarial_tokens(batch)
+  File "/home/minbyul/github/biobert-pytorch/adversarial-attack/hotflip.py", line 112, in _adversarial_tokens
+    self.batch_output.append(adv_tokens) # append adversarial token info.
+  File "/home/minbyul/github/biobert-pytorch/adversarial-attack/hotflip.py", line 112, in _adversarial_tokens
+    self.batch_output.append(adv_tokens) # append adversarial token info.
+  File "/home/minbyul/anaconda3/envs/biobert-pytorch/lib/python3.7/bdb.py", line 88, in trace_dispatch
+    return self.dispatch_line(frame)
+  File "/home/minbyul/anaconda3/envs/biobert-pytorch/lib/python3.7/bdb.py", line 113, in dispatch_line
+    if self.quitting: raise BdbQuit
+bdb.BdbQuit

@@ -1,0 +1,274 @@
+12/29/2020 07:14:10 - INFO - transformers.training_args -   PyTorch: setting up devices
+12/29/2020 07:14:10 - WARNING - __main__ -   Process rank: -1, device: cuda:0, n_gpu: 1, distributed training: False, 16-bits training: False
+12/29/2020 07:14:10 - INFO - __main__ -   Training/evaluation parameters TrainingArguments(output_dir='/hdd1/minbyul/output/ner_output//biobert/NCBI-disease-softmax-35-hotflip', overwrite_output_dir=True, do_train=False, do_eval=True, do_predict=True, evaluate_during_training=False, per_device_train_batch_size=8, per_device_eval_batch_size=1, per_gpu_train_batch_size=None, per_gpu_eval_batch_size=None, gradient_accumulation_steps=1, learning_rate=5e-05, weight_decay=0.0, adam_epsilon=1e-08, max_grad_norm=1.0, num_train_epochs=35.0, max_steps=-1, warmup_steps=0, logging_dir='runs/Dec29_07-14-08_gpower_a', logging_first_step=False, logging_steps=500, save_steps=-1, save_total_limit=None, no_cuda=False, seed=1, fp16=False, fp16_opt_level='O1', local_rank=-1, tpu_num_cores=None, tpu_metrics_debug=False, dataloader_drop_last=False)
+12/29/2020 07:14:10 - INFO - transformers.configuration_utils -   loading configuration file /hdd1/minbyul/output/ner_output//biobert/NCBI-disease-softmax-35-removedot/config.json
+12/29/2020 07:14:10 - INFO - transformers.configuration_utils -   Model config BertConfig {
+  "architectures": [
+    "BertForTokenClassification"
+  ],
+  "attention_probs_dropout_prob": 0.1,
+  "gradient_checkpointing": false,
+  "hidden_act": "gelu",
+  "hidden_dropout_prob": 0.1,
+  "hidden_size": 768,
+  "id2label": {
+    "0": "O",
+    "1": "B-bio",
+    "2": "I-bio",
+    "3": "-bio"
+  },
+  "initializer_range": 0.02,
+  "intermediate_size": 3072,
+  "label2id": {
+    "-bio": 3,
+    "B-bio": 1,
+    "I-bio": 2,
+    "O": 0
+  },
+  "layer_norm_eps": 1e-12,
+  "max_position_embeddings": 512,
+  "model_type": "bert",
+  "num_attention_heads": 12,
+  "num_hidden_layers": 12,
+  "pad_token_id": 0,
+  "type_vocab_size": 2,
+  "vocab_size": 28996
+}
+
+12/29/2020 07:14:10 - INFO - transformers.configuration_utils -   loading configuration file /hdd1/minbyul/output/ner_output//biobert/NCBI-disease-softmax-35-removedot/config.json
+12/29/2020 07:14:10 - INFO - transformers.configuration_utils -   Model config BertConfig {
+  "architectures": [
+    "BertForTokenClassification"
+  ],
+  "attention_probs_dropout_prob": 0.1,
+  "gradient_checkpointing": false,
+  "hidden_act": "gelu",
+  "hidden_dropout_prob": 0.1,
+  "hidden_size": 768,
+  "id2label": {
+    "0": "O",
+    "1": "B",
+    "2": "I",
+    "3": "X"
+  },
+  "initializer_range": 0.02,
+  "intermediate_size": 3072,
+  "label2id": {
+    "B": 1,
+    "I": 2,
+    "O": 0,
+    "X": 3
+  },
+  "layer_norm_eps": 1e-12,
+  "max_position_embeddings": 512,
+  "model_type": "bert",
+  "num_attention_heads": 12,
+  "num_hidden_layers": 12,
+  "pad_token_id": 0,
+  "type_vocab_size": 2,
+  "vocab_size": 28996
+}
+
+12/29/2020 07:14:10 - INFO - transformers.tokenization_utils_base -   Model name '/hdd1/minbyul/output/ner_output//biobert/NCBI-disease-softmax-35-removedot' not found in model shortcut name list (bert-base-uncased, bert-large-uncased, bert-base-cased, bert-large-cased, bert-base-multilingual-uncased, bert-base-multilingual-cased, bert-base-chinese, bert-base-german-cased, bert-large-uncased-whole-word-masking, bert-large-cased-whole-word-masking, bert-large-uncased-whole-word-masking-finetuned-squad, bert-large-cased-whole-word-masking-finetuned-squad, bert-base-cased-finetuned-mrpc, bert-base-german-dbmdz-cased, bert-base-german-dbmdz-uncased, TurkuNLP/bert-base-finnish-cased-v1, TurkuNLP/bert-base-finnish-uncased-v1, wietsedv/bert-base-dutch-cased). Assuming '/hdd1/minbyul/output/ner_output//biobert/NCBI-disease-softmax-35-removedot' is a path, a model identifier, or url to a directory containing tokenizer files.
+12/29/2020 07:14:10 - INFO - transformers.tokenization_utils_base -   Didn't find file /hdd1/minbyul/output/ner_output//biobert/NCBI-disease-softmax-35-removedot/added_tokens.json. We won't load it.
+12/29/2020 07:14:10 - INFO - transformers.tokenization_utils_base -   Didn't find file /hdd1/minbyul/output/ner_output//biobert/NCBI-disease-softmax-35-removedot/tokenizer.json. We won't load it.
+12/29/2020 07:14:10 - INFO - transformers.tokenization_utils_base -   loading file /hdd1/minbyul/output/ner_output//biobert/NCBI-disease-softmax-35-removedot/vocab.txt
+12/29/2020 07:14:10 - INFO - transformers.tokenization_utils_base -   loading file None
+12/29/2020 07:14:10 - INFO - transformers.tokenization_utils_base -   loading file /hdd1/minbyul/output/ner_output//biobert/NCBI-disease-softmax-35-removedot/special_tokens_map.json
+12/29/2020 07:14:10 - INFO - transformers.tokenization_utils_base -   loading file /hdd1/minbyul/output/ner_output//biobert/NCBI-disease-softmax-35-removedot/tokenizer_config.json
+12/29/2020 07:14:10 - INFO - transformers.tokenization_utils_base -   loading file None
+12/29/2020 07:14:10 - INFO - transformers.modeling_utils -   loading weights file /hdd1/minbyul/output/ner_output//biobert/NCBI-disease-softmax-35-removedot/pytorch_model.bin
+12/29/2020 07:14:12 - INFO - transformers.modeling_utils -   All model checkpoint weights were used when initializing BertForTokenClassification.
+
+12/29/2020 07:14:12 - INFO - transformers.modeling_utils -   All the weights of BertForTokenClassification were initialized from the model checkpoint at /hdd1/minbyul/output/ner_output//biobert/NCBI-disease-softmax-35-removedot.
+If your task is similar to the task the model of the ckeckpoint was trained on, you can already use BertForTokenClassification for predictions without further training.
+12/29/2020 07:14:12 - INFO - filelock -   Lock 140119011558032 acquired on /home/minbyul/github/biobert-pytorch/datasets//NER/NCBI-disease/cached_devel_BertTokenizer_128.lock
+12/29/2020 07:14:12 - INFO - utils.utils_ner -   Loading features from cached file /home/minbyul/github/biobert-pytorch/datasets//NER/NCBI-disease/cached_devel_BertTokenizer_128
+12/29/2020 07:14:12 - INFO - filelock -   Lock 140119011558032 released on /home/minbyul/github/biobert-pytorch/datasets//NER/NCBI-disease/cached_devel_BertTokenizer_128.lock
+12/29/2020 07:14:12 - INFO - filelock -   Lock 140118974077968 acquired on /home/minbyul/github/biobert-pytorch/datasets//NER/NCBI-disease/cached_test_BertTokenizer_128.lock
+12/29/2020 07:14:12 - INFO - utils.utils_ner -   Loading features from cached file /home/minbyul/github/biobert-pytorch/datasets//NER/NCBI-disease/cached_test_BertTokenizer_128
+12/29/2020 07:14:12 - INFO - filelock -   Lock 140118974077968 released on /home/minbyul/github/biobert-pytorch/datasets//NER/NCBI-disease/cached_test_BertTokenizer_128.lock
+12/29/2020 07:14:13 - INFO - __main__ -   *** Adversarial attack on Evaluation Set***
+  0%|          | 0/923 [00:00<?, ?it/s]> /home/minbyul/github/biobert-pytorch/adversarial-attack/hotflip.py(61)_adversarial_tokens()
+-> self.batch_output.append() # append adversarial toekn info.
+(Pdb) Embedding(28996, 768, padding_idx=0)
+(Pdb) tensor([[  101, 26660, 11356,  1475,  1110,  3318,  1174,  1105, 10877,  4625,
+          1104,   170,   176, 23851,  1179,   119,   102,     0,     0,     0,
+             0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+             0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+             0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+             0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+             0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+             0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+             0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+             0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+             0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+             0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+             0,     0,     0,     0,     0,     0,     0,     0]],
+       device='cuda:0')
+(Pdb) tensor([[-3.1624, -2.9882, -2.8115, 10.3868],
+        [ 9.7701, -3.3313, -3.6133, -3.3899],
+        [-3.0362, -3.1065, -3.1019, 10.2933],
+        [-2.9396, -3.1905, -2.9629, 10.3358],
+        [ 9.8637, -3.6647, -3.1760, -3.9037],
+        [ 9.7827, -3.4794, -3.3722, -3.7665],
+        [-2.8761, -3.2161, -3.2747, 10.1949],
+        [ 9.8613, -3.6896, -3.1329, -3.9880],
+        [ 9.8827, -3.6519, -3.1376, -3.9012],
+        [ 9.8717, -3.6666, -3.2749, -3.8137],
+        [ 9.8562, -3.6136, -3.2180, -3.9018],
+        [ 9.8509, -3.5328, -3.0870, -4.0578],
+        [ 9.7825, -3.3451, -3.3845, -3.8690],
+        [-2.9958, -3.1388, -3.2498, 10.1712],
+        [-2.9767, -3.1261, -3.0638, 10.2390],
+        [ 9.9007, -3.4397, -3.1389, -4.0522],
+        [-2.8382, -3.3436, -3.0602, 10.1293],
+        [ 8.1289, -2.4427, -2.9391, -2.9768],
+        [ 9.2480, -3.0755, -3.0942, -3.6384],
+        [ 9.2406, -2.9816, -3.1131, -3.6134],
+        [ 7.1475, -2.2621, -2.6859, -2.2934],
+        [ 6.3928, -1.8526, -2.7409, -1.7975],
+        [ 6.7138, -1.9914, -2.9372, -1.9172],
+        [ 9.2516, -2.8553, -3.2833, -3.6821],
+        [ 8.3265, -2.7600, -3.0280, -3.1263],
+        [ 8.8314, -2.8951, -3.2195, -3.3596],
+        [ 9.4781, -3.0684, -3.2796, -3.7819],
+        [ 9.5170, -2.9941, -3.2975, -3.8666],
+        [ 5.7939, -1.3184, -3.3590, -1.1945],
+        [ 4.9370, -1.2618, -3.1427, -0.4812],
+        [ 7.9843, -2.4564, -3.2141, -2.5922],
+        [ 9.5946, -2.9328, -3.2347, -3.8790],
+        [ 9.2205, -2.8157, -3.2018, -3.7010],
+        [ 7.8897, -2.3453, -3.0310, -2.8089],
+        [ 6.4794, -1.1275, -3.2658, -1.9682],
+        [ 9.0978, -2.6245, -3.2960, -3.5406],
+        [ 8.8293, -2.6471, -3.2164, -3.3821],
+        [ 7.5717, -1.4724, -3.5922, -2.6687],
+        [ 7.0936, -1.7070, -3.6541, -2.3137],
+        [ 8.1223, -2.7569, -3.0533, -2.9488],
+        [ 8.4300, -3.2791, -2.8626, -2.8361],
+        [ 6.6226, -2.1345, -3.1407, -2.1200],
+        [ 7.4732, -2.6704, -3.1216, -2.1842],
+        [ 8.1018, -3.1712, -2.6731, -2.9942],
+        [ 8.3605, -2.8792, -2.7971, -2.9856],
+        [ 7.3276, -2.9467, -2.5843, -2.2331],
+        [ 9.1753, -3.4383, -3.2043, -3.1042],
+        [ 7.8475, -2.4690, -2.6961, -3.0886],
+        [ 5.9221, -2.2175, -2.5668, -0.6480],
+        [-2.9236, -3.0032, -3.1391, 10.0223],
+        [-2.6843, -3.0176, -3.1254,  9.9715],
+        [ 9.8903, -3.3501, -3.0818, -3.9658],
+        [ 9.1688, -2.8794, -3.2957, -3.5412],
+        [ 7.7512, -2.3093, -3.6778, -2.6320],
+        [ 9.2217, -2.8911, -3.2482, -3.5272],
+        [ 9.6085, -3.4243, -3.0338, -3.5730],
+        [ 8.9198, -2.9756, -3.2047, -3.3917],
+        [ 8.5619, -3.0038, -3.0429, -3.1494],
+        [ 7.0046, -2.3334, -3.1025, -2.2897],
+        [ 8.8695, -3.1029, -3.0705, -3.3975],
+        [ 8.2591, -3.0866, -2.7365, -2.9992],
+        [ 8.4604, -2.9614, -2.8250, -3.0101],
+        [ 8.9811, -3.0569, -3.2292, -3.3499],
+        [ 9.5608, -2.9170, -3.3473, -3.8386],
+        [ 5.6924, -2.0468, -2.6282, -0.5757],
+        [ 5.4425, -1.9298, -2.7126, -0.3187],
+        [ 9.7213, -3.1250, -3.1976, -3.9110],
+        [ 9.7596, -3.1985, -3.1648, -3.8709],
+        [ 8.6279, -2.6440, -3.2281, -3.1690],
+        [ 7.9653, -2.0000, -3.5257, -2.4300],
+        [ 6.8443, -1.7450, -3.1684, -1.8524],
+        [-2.1204, -3.2330, -2.9825,  9.8014],
+        [ 8.3047, -3.4246, -2.6965, -2.4754],
+        [ 7.4781, -2.5915, -3.2078, -2.4819],
+        [ 9.2645, -2.7245, -3.5454, -3.4223],
+        [ 9.2071, -3.4344, -2.9172, -3.3972],
+        [ 8.2925, -3.0450, -2.8001, -3.0493],
+        [ 8.5377, -3.2273, -2.8905, -2.9534],
+        [ 7.4389, -2.4931, -3.1955, -2.4364],
+        [ 9.4431, -3.3609, -3.0715, -3.6616],
+        [ 8.6845, -3.2115, -2.8583, -3.2042],
+        [ 8.6302, -2.8896, -2.9477, -3.1055],
+        [-2.8898, -2.9737, -3.1383,  9.9940],
+        [ 9.3177, -3.1717, -2.9825, -3.5459],
+        [ 9.5112, -3.3148, -2.8390, -3.6423],
+        [ 8.5993, -2.5781, -3.1479, -3.2031],
+        [ 8.6326, -2.5973, -3.2261, -3.1809],
+        [-2.9369, -3.1079, -3.0740, 10.1992],
+        [-2.7751, -3.1517, -2.9616, 10.1616],
+        [ 7.4538, -3.2256, -2.5403, -1.9091],
+        [ 8.6266, -3.3668, -2.8768, -2.8245],
+        [ 7.7156, -2.6227, -3.2538, -2.5922],
+        [ 6.8215, -3.1338, -2.3955, -1.2919],
+        [ 8.1782, -3.2719, -2.7841, -2.5203],
+        [ 7.6958, -2.5773, -3.2721, -2.5799],
+        [-0.7720, -3.3513, -3.2721,  8.5317],
+        [ 8.7636, -3.3935, -2.7813, -3.3320],
+        [ 8.5022, -2.9589, -2.8071, -3.0172],
+        [ 7.7796, -2.9932, -2.6723, -2.4909],
+        [ 9.4225, -3.4942, -3.2096, -3.3328],
+        [ 8.3417, -2.7463, -2.6976, -3.2669],
+        [ 6.0280, -2.2085, -2.5600, -0.8005],
+        [-2.8311, -3.0973, -3.1778, 10.0427],
+        [-2.8399, -2.9360, -3.1583,  9.9892],
+        [ 9.8853, -3.4524, -2.9528, -3.9805],
+        [ 9.8696, -3.2968, -3.0645, -4.0322],
+        [ 6.4457, -1.9379, -2.9989, -1.3286],
+        [ 5.8396, -1.3840, -2.8797, -1.2360],
+        [ 5.0611, -2.3090, -1.8600, -0.4604],
+        [ 9.7624, -3.1533, -3.1522, -3.9589],
+        [ 7.0557, -2.2506, -2.5480, -2.1789],
+        [ 4.1578, -1.2854, -2.8117, -0.2438],
+        [ 8.2228, -2.6631, -3.0280, -2.8899],
+        [ 9.2069, -2.9745, -3.2160, -3.3888],
+        [ 8.5543, -2.5817, -3.0900, -3.2320],
+        [ 9.0554, -2.7862, -3.2136, -3.4717],
+        [ 9.1186, -2.7314, -3.3867, -3.4404],
+        [ 9.4081, -2.9810, -3.2590, -3.6557],
+        [ 8.0846, -2.8000, -2.9167, -2.7966],
+        [ 7.8016, -2.6967, -2.7782, -2.5261],
+        [ 7.1817, -2.9339, -2.4303, -2.1316],
+        [ 9.0290, -3.4002, -3.1293, -3.0073],
+        [ 7.6072, -2.4701, -2.5028, -2.9334],
+        [ 4.8918, -1.9514, -2.3419, -0.0606],
+        [-2.9135, -2.9942, -3.1346, 10.0222],
+        [-2.6835, -2.9543, -3.1678,  9.9184],
+        [ 9.8685, -3.3562, -3.0515, -4.0286],
+        [ 8.0812, -2.5418, -2.8978, -2.9083]], device='cuda:0',
+       grad_fn=<ViewBackward>)
+(Pdb) torch.Size([128, 4])
+(Pdb) torch.Size([1, 128])
+(Pdb) torch.Size([1, 128, 768])
+(Pdb) *** AttributeError: 'Embedding' object has no attribute 'shape'
+(Pdb) Embedding(28996, 768, padding_idx=0)
+(Pdb) *** AttributeError: 'Embedding' object has no attribute 'wiehgt'
+(Pdb) Parameter containing:
+tensor([[-0.0265, -0.0074, -0.0290,  ..., -0.0363, -0.0341,  0.0183],
+        [-0.0116,  0.0133, -0.0578,  ..., -0.0236, -0.0681, -0.0066],
+        [ 0.0233,  0.0052, -0.0251,  ..., -0.0698, -0.0221, -0.0255],
+        ...,
+        [-0.0297, -0.0520, -0.0594,  ..., -0.0552, -0.0592,  0.0144],
+        [-0.0454,  0.0151, -0.0613,  ..., -0.0792, -0.0300, -0.0051],
+        [ 0.0303, -0.0056, -0.0408,  ..., -0.0215, -0.0521, -0.0016]],
+       device='cuda:0', requires_grad=True)
+(Pdb) *** AttributeError: 'Embedding' object has no attribute 'keys'
+(Pdb) *** AttributeError: 'Embedding' object has no attribute 'keys'
+(Pdb) Embedding(28996, 768, padding_idx=0)
+(Pdb) *** TypeError: forward() missing 1 required positional argument: 'input'
+(Pdb) torch.Size([28996, 768])
+(Pdb)   0%|          | 0/923 [09:54<?, ?it/s]
+Traceback (most recent call last):
+  File "run_ner.py", line 280, in <module>
+    main()
+  File "run_ner.py", line 255, in main
+    instances = adversarial.adversarial_attack(eval_dataset)
+  File "/home/minbyul/github/biobert-pytorch/adversarial-attack/hotflip.py", line 21, in adversarial_attack
+    for batch in iterator:
+  File "/home/minbyul/github/biobert-pytorch/adversarial-attack/hotflip.py", line 61, in _adversarial_tokens
+    embedding_layer = self.get_embeddings_layer()
+  File "/home/minbyul/github/biobert-pytorch/adversarial-attack/hotflip.py", line 61, in _adversarial_tokens
+    embedding_layer = self.get_embeddings_layer()
+  File "/home/minbyul/anaconda3/envs/biobert-pytorch/lib/python3.7/bdb.py", line 88, in trace_dispatch
+    return self.dispatch_line(frame)
+  File "/home/minbyul/anaconda3/envs/biobert-pytorch/lib/python3.7/bdb.py", line 113, in dispatch_line
+    if self.quitting: raise BdbQuit
+bdb.BdbQuit
