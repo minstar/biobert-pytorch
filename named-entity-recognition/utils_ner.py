@@ -20,6 +20,7 @@ import logging
 import os
 import pdb
 import json
+import numpy as np
 
 from dataclasses import dataclass
 from enum import Enum
@@ -27,6 +28,7 @@ from typing import List, Optional, Union
 
 from filelock import FileLock
 
+from tqdm import tqdm
 from transformers import PreTrainedTokenizer, is_tf_available, is_torch_available
 
 
@@ -62,12 +64,12 @@ class InputFeatures:
     token_type_ids: Optional[List[int]] = None
     label_ids: Optional[List[int]] = None
     bias_tensor: Optional[List[int]] = None
+    data_type: Optional[List[int]] = None
 
 class Split(Enum):
     train = "train"
     dev = "devel"
     test = "test"
-
 
 if is_torch_available():
     import torch
@@ -94,6 +96,7 @@ if is_torch_available():
             max_seq_length: Optional[int] = None,
             overwrite_cache=False,
             mode: Split = Split.train,
+            is_pmi=False,
         ):
             # Load data features from cache or dataset file
             cached_features_file = os.path.join(
@@ -130,10 +133,11 @@ if is_torch_available():
                         pad_token_label_id=self.pad_token_label_id,
                         data_name=data_dir.split('/')[-1],
                         data_type=mode.value,
+                        is_pmi=is_pmi,
                     )
                     logger.info(f"Saving features into cached file {cached_features_file}")
                     torch.save(self.features, cached_features_file)
-
+                
         def __len__(self):
             return len(self.features)
 
@@ -283,6 +287,7 @@ def convert_examples_to_features(
     mask_padding_with_zero=True,
     data_name="",
     data_type="",
+    is_pmi=False,
 ) -> List[InputFeatures]:
     """ Loads a data file into a list of `InputFeatures`
         `cls_token_at_end` define the location of the CLS token:
@@ -298,8 +303,12 @@ def convert_examples_to_features(
     # word_dict = {'B': {}, 'I': {}, 'O': {}}
     with open('/home/minbyul/github/biobert-pytorch/datasets/NER/%s/%s-class_distribution.json' % (data_name, data_type), 'r') as fp:
         word_class_distribution = json.load(fp)
+    
+    if is_pmi:
+        pmi_data = _get_pmi_data(word_class_distribution)
+        word_class_distribution = pmi_data
 
-    for (ex_index, example) in enumerate(examples):
+    for (ex_index, example) in tqdm(enumerate(examples)):
         if ex_index % 10_000 == 0:
             logger.info("Writing example %d of %d", ex_index, len(examples))
 
@@ -370,7 +379,9 @@ def convert_examples_to_features(
             word_class = [cls_token] + word_class
 
         input_ids = tokenizer.convert_tokens_to_ids(tokens)
-        word_class_tensor = _get_word_class_distribution(word_class, tokens, word_class_distribution, label_ids, max_seq_length, pad_on_left, num_labels)
+        
+        if is_pmi:
+            word_class_tensor = _get_word_class_distribution(word_class, tokens, word_class_distribution, label_ids, max_seq_length, pad_on_left, num_labels, is_pmi=True)
         
         # The mask has 1 for real tokens and 0 for padding tokens. Only real
         # tokens are attended to.
@@ -394,6 +405,11 @@ def convert_examples_to_features(
         assert len(segment_ids) == max_seq_length
         assert len(label_ids) == max_seq_length
 
+        if 'train' in data_type:
+            data_type = [1]
+        else:
+            data_type = [0]
+
         if ex_index < 5:
             logger.info("*** Example ***")
             logger.info("guid: %s", example.guid)
@@ -408,26 +424,65 @@ def convert_examples_to_features(
         
         features.append(
             InputFeatures(
-                input_ids=input_ids, attention_mask=input_mask, token_type_ids=segment_ids, label_ids=label_ids, bias_tensor=word_class_tensor,
+                input_ids=input_ids, attention_mask=input_mask, token_type_ids=segment_ids, \
+                label_ids=label_ids, bias_tensor=word_class_tensor, data_type=data_type
             )
         )
-        
     # with open('/home/minbyul/github/biobert-pytorch/datasets/NER/%s/%s-class_distribution.json' % (data_name, data_type), 'w') as out_:
     #     json.dump(word_dict, out_, indent=2)
 
     return features
 
-def _get_word_class_distribution(word_class, tokens, word_class_distribution, label_ids, max_seq_length, pad_on_left, num_labels):
+def _get_pmi_data(word_class_distribution):
+    pmi_data = {'B': {}, 'I':{}, 'O':{}}
+    b_num, i_num, o_num = 0, 0, 0
+    word_freq = 0
+    # Pointwise Mutual Information (PMI)
+    # add-100 smoothing
+    for class_key in word_class_distribution.keys():
+        for key, val in word_class_distribution[class_key].items():
+            word_class_distribution[class_key][key] += 100
+
+    for class_key in word_class_distribution.keys():
+        if class_key == 'B':
+            for key, val in word_class_distribution[class_key].items():
+                b_num += word_class_distribution['B'][key]
+                i_num += word_class_distribution['I'][key]
+                o_num += word_class_distribution['O'][key]
+    
+    word_freq = b_num+i_num+o_num
+    for class_key in word_class_distribution.keys():
+        for key, val in word_class_distribution[class_key].items():
+            cur_word_freq = word_class_distribution['B'][key] + word_class_distribution['I'][key] + word_class_distribution['O'][key]
+            numerator = word_class_distribution[class_key][key] / cur_word_freq
+
+            if class_key == 'B':
+                denominator = b_num / word_freq * cur_word_freq / word_freq
+            elif class_key == 'I':
+                denominator = i_num / word_freq * cur_word_freq / word_freq
+            else:
+                denominator = o_num / word_freq * cur_word_freq / word_freq
+
+            pmi_data[class_key][key] = np.log(numerator / denominator)
+
+    return pmi_data
+        
+
+def _get_word_class_distribution(word_class, tokens, word_class_distribution, label_ids, max_seq_length, pad_on_left, num_labels, is_pmi=False):
     assert len(word_class) == len(tokens)
+        
     class_bias = []
     padding_length = max_seq_length - len(word_class)
 
     class_bias.append([0] * num_labels) # [CLS]
     for word_idx, word in enumerate(word_class[1:-1]):
         # if need smoothing then add smooth parameter
-        all_sum = word_class_distribution['B'][word] + word_class_distribution['I'][word] + word_class_distribution['O'][word]
-        class_bias.append([word_class_distribution['B'][word]/all_sum, word_class_distribution['I'][word]/all_sum, word_class_distribution['O'][word]/all_sum])
-    
+        if is_pmi:
+            class_bias.append([word_class_distribution['B'][word], word_class_distribution['I'][word], word_class_distribution['O'][word]])
+        else:
+            all_sum = word_class_distribution['B'][word] + word_class_distribution['I'][word] + word_class_distribution['O'][word]
+            class_bias.append([word_class_distribution['B'][word]/all_sum, word_class_distribution['I'][word]/all_sum, word_class_distribution['O'][word]/all_sum])
+            
     class_bias.append([0] * num_labels) # [SEP]
     if pad_on_left:
         class_bias = ([0] * num_labels)

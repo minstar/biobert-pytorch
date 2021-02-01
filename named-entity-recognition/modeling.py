@@ -268,7 +268,7 @@ class CRFNER_MASKSIM(BertForTokenClassification):
             return logits
 
 class BioNER(BertForTokenClassification):
-    def __init__(self, config, num_labels=3, random_bias=False, freq_bias=True, pmi_bias=False):
+    def __init__(self, config, num_labels=3, random_bias=False, freq_bias=False, pmi_bias=True):
         super(BioNER, self).__init__(config)
         self.num_labels = num_labels
         self.bert = BertModel(config)
@@ -279,17 +279,19 @@ class BioNER(BertForTokenClassification):
         self.pmi_bias = pmi_bias
         self.init_weights()
 
-    def forward(self, input_ids, token_type_ids=None, attention_mask=None, labels=None, bias_tensor=None):
+    def forward(self, input_ids, token_type_ids=None, attention_mask=None, labels=None, bias_tensor=None, data_type=None):
         sequence_output = self.bert(input_ids, token_type_ids, attention_mask, head_mask=None)[0]
         batch_size,max_len,feat_dim = sequence_output.shape
         sequence_output = self.dropout(sequence_output)
 
         logits = self.classifier(sequence_output)
-        if self.random_bias:
-            rand_logits = torch.rand(batch_size, max_len, self.num_labels).cuda()
-            logits = logits + rand_logits
-        elif self.freq_bias:
-            logits = logits + bias_tensor
+        
+        if data_type[0][0].item() == 1:
+            if self.random_bias:
+                rand_logits = torch.rand(batch_size, max_len, self.num_labels).cuda()
+                logits = logits + rand_logits
+            elif self.freq_bias or self.pmi_bias:
+                logits = logits + bias_tensor
         
         outputs = (logits, sequence_output)
         if labels is not None:

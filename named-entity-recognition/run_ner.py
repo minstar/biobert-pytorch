@@ -96,6 +96,9 @@ class DataTrainingArguments:
     wandb_name: str = field(
         default=None, metadata={'help': "Name of Wandb runs"},
     )
+    is_pmi: bool = field(
+        default=False, metadata={'help': "To use Pointwise Mututal Information in debiasing"}
+    )
 
 
 def main():
@@ -194,6 +197,7 @@ def main():
             max_seq_length=data_args.max_seq_length,
             overwrite_cache=data_args.overwrite_cache,
             mode=Split.train,
+            is_pmi=data_args.is_pmi,
         )
         if training_args.do_train
         else None
@@ -207,6 +211,7 @@ def main():
             max_seq_length=data_args.max_seq_length,
             overwrite_cache=data_args.overwrite_cache,
             mode=Split.dev,
+            is_pmi=data_args.is_pmi,
         )
         if training_args.do_eval
         else None
@@ -285,6 +290,7 @@ def main():
             max_seq_length=data_args.max_seq_length,
             overwrite_cache=data_args.overwrite_cache,
             mode=Split.test,
+            is_pmi=data_args.is_pmi,
         )
 
         predictions, label_ids, metrics = trainer.predict(test_dataset)
