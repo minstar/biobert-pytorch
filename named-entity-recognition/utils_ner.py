@@ -19,6 +19,8 @@
 import logging
 import os
 import pdb
+import json
+
 from dataclasses import dataclass
 from enum import Enum
 from typing import List, Optional, Union
@@ -59,10 +61,10 @@ class InputFeatures:
     attention_mask: List[int]
     token_type_ids: Optional[List[int]] = None
     label_ids: Optional[List[int]] = None
-
+    bias_tensor: Optional[List[int]] = None
 
 class Split(Enum):
-    train = "train_dev"
+    train = "train"
     dev = "devel"
     test = "test"
 
@@ -126,6 +128,8 @@ if is_torch_available():
                         pad_token=tokenizer.pad_token_id,
                         pad_token_segment_id=tokenizer.pad_token_type_id,
                         pad_token_label_id=self.pad_token_label_id,
+                        data_name=data_dir.split('/')[-1],
+                        data_type=mode.value,
                     )
                     logger.info(f"Saving features into cached file {cached_features_file}")
                     torch.save(self.features, cached_features_file)
@@ -252,10 +256,7 @@ def read_examples_from_file(data_dir, mode: Union[Split, str]) -> List[InputExam
                 words.append(splits[0])
                 if len(splits) > 1:
                     splits_replace = splits[-1].replace("\n", "")
-                    if splits_replace == 'O':
-                        labels.append(splits_replace)
-                    else:
-                        labels.append(splits_replace + "-bio")
+                    labels.append(splits_replace)
                 else:
                     # Examples could have no label for mode = "test"
                     labels.append("O")
@@ -280,6 +281,8 @@ def convert_examples_to_features(
     pad_token_label_id=-100,
     sequence_a_segment_id=0,
     mask_padding_with_zero=True,
+    data_name="",
+    data_type="",
 ) -> List[InputFeatures]:
     """ Loads a data file into a list of `InputFeatures`
         `cls_token_at_end` define the location of the CLS token:
@@ -290,14 +293,20 @@ def convert_examples_to_features(
     # TODO clean up all this to leverage built-in features of tokenizers
 
     label_map = {label: i for i, label in enumerate(label_list)}
+    num_labels = len(label_map)
     features = []
+    # word_dict = {'B': {}, 'I': {}, 'O': {}}
+    with open('/home/minbyul/github/biobert-pytorch/datasets/NER/%s/%s-class_distribution.json' % (data_name, data_type), 'r') as fp:
+        word_class_distribution = json.load(fp)
+
     for (ex_index, example) in enumerate(examples):
         if ex_index % 10_000 == 0:
             logger.info("Writing example %d of %d", ex_index, len(examples))
 
         tokens = []
         label_ids = []
-        for word, label in zip(example.words, example.labels):
+        word_class = []
+        for word_idx, (word, label) in enumerate(zip(example.words, example.labels)):
             word_tokens = tokenizer.tokenize(word)
             
             # bert-base-multilingual-cased sometimes output "nothing ([]) when calling tokenize with just a space.
@@ -305,12 +314,19 @@ def convert_examples_to_features(
                 tokens.extend(word_tokens)
                 # Use the real label id for the first token of the word, and padding ids for the remaining tokens
                 label_ids.extend([label_map[label]] + [pad_token_label_id] * (len(word_tokens) - 1))
+                word_class.extend([word] * len(word_tokens))
 
+            # for label_key,label_value in word_dict.items():
+            #     if word not in word_dict[label_key]:
+            #         word_dict[label_key][word] = 0
+            # word_dict[label][word] += 1
+            
         # Account for [CLS] and [SEP] with "- 2" and with "- 3" for RoBERTa.
         special_tokens_count = tokenizer.num_special_tokens_to_add()
         if len(tokens) > max_seq_length - special_tokens_count:
             tokens = tokens[: (max_seq_length - special_tokens_count)]
             label_ids = label_ids[: (max_seq_length - special_tokens_count)]
+            word_class = word_class[: (max_seq_length - special_tokens_count)]
 
         # The convention in BERT is:
         # (a) For sequence pairs:
@@ -332,23 +348,30 @@ def convert_examples_to_features(
         # the entire model is fine-tuned.
         tokens += [sep_token]
         label_ids += [pad_token_label_id]
+        word_class += [sep_token]
+
         if sep_token_extra:
             # roberta uses an extra separator b/w pairs of sentences
             tokens += [sep_token]
             label_ids += [pad_token_label_id]
+            word_class += [sep_token]
+            
         segment_ids = [sequence_a_segment_id] * len(tokens)
 
         if cls_token_at_end:
             tokens += [cls_token]
             label_ids += [pad_token_label_id]
             segment_ids += [cls_token_segment_id]
+            word_class += [cls_token]
         else:
             tokens = [cls_token] + tokens
             label_ids = [pad_token_label_id] + label_ids
             segment_ids = [cls_token_segment_id] + segment_ids
+            word_class = [cls_token] + word_class
 
         input_ids = tokenizer.convert_tokens_to_ids(tokens)
-
+        word_class_tensor = _get_word_class_distribution(word_class, tokens, word_class_distribution, label_ids, max_seq_length, pad_on_left, num_labels)
+        
         # The mask has 1 for real tokens and 0 for padding tokens. Only real
         # tokens are attended to.
         input_mask = [1 if mask_padding_with_zero else 0] * len(input_ids)
@@ -382,23 +405,58 @@ def convert_examples_to_features(
 
         if "token_type_ids" not in tokenizer.model_input_names:
             segment_ids = None
-
+        
         features.append(
             InputFeatures(
-                input_ids=input_ids, attention_mask=input_mask, token_type_ids=segment_ids, label_ids=label_ids
+                input_ids=input_ids, attention_mask=input_mask, token_type_ids=segment_ids, label_ids=label_ids, bias_tensor=word_class_tensor,
             )
         )
+        
+    # with open('/home/minbyul/github/biobert-pytorch/datasets/NER/%s/%s-class_distribution.json' % (data_name, data_type), 'w') as out_:
+    #     json.dump(word_dict, out_, indent=2)
+
     return features
 
+def _get_word_class_distribution(word_class, tokens, word_class_distribution, label_ids, max_seq_length, pad_on_left, num_labels):
+    assert len(word_class) == len(tokens)
+    class_bias = []
+    padding_length = max_seq_length - len(word_class)
 
-def get_labels(path: str) -> List[str]:
+    class_bias.append([0] * num_labels) # [CLS]
+    for word_idx, word in enumerate(word_class[1:-1]):
+        # if need smoothing then add smooth parameter
+        all_sum = word_class_distribution['B'][word] + word_class_distribution['I'][word] + word_class_distribution['O'][word]
+        class_bias.append([word_class_distribution['B'][word]/all_sum, word_class_distribution['I'][word]/all_sum, word_class_distribution['O'][word]/all_sum])
+    
+    class_bias.append([0] * num_labels) # [SEP]
+    if pad_on_left:
+        class_bias = ([0] * num_labels)
+    else:
+        class_bias += ([([0] * num_labels) for i in range(padding_length)])
+    
+    class_bias = torch.FloatTensor(class_bias).cuda()
+    return class_bias
+
+def get_bio_labels(path: str) -> List[str]:
     if path:
         with open(path, "r") as f:
             labels = f.read().splitlines()
-            labels = [i+'-bio' if i != 'O' else 'O' for i in labels]
+            # labels = [i+'-bio' if i != 'O' else 'O' for i in labels]
         if "O" not in labels:
             labels = ["O"] + labels
         return labels
     else:
         # return ["O", "B-MISC", "I-MISC", "B-PER", "I-PER", "B-ORG", "I-ORG", "B-LOC", "I-LOC"]
-        return ["O", "B-bio", "I-bio"]
+        return ["O", "B", "I"]
+
+def get_labels(path: str) -> List[str]:
+    if path:
+        with open(path, "r") as f:
+            labels = f.read().splitlines()
+            
+        if "O" not in labels:
+            labels = ["O"] + labels
+        return labels
+    else:
+        return ["O", "B-MISC", "I-MISC", "B-PER", "I-PER", "B-ORG", "I-ORG", "B-LOC", "I-LOC"]
+

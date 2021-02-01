@@ -40,7 +40,9 @@ from transformers import (
     TrainingArguments,
     set_seed,
 )
-from utils_ner import NerDataset, Split, get_labels
+import wandb
+from utils_ner import NerDataset, Split, get_bio_labels
+from modeling import *
 
 logger = logging.getLogger(__name__)
 
@@ -91,6 +93,9 @@ class DataTrainingArguments:
     overwrite_cache: bool = field(
         default=False, metadata={"help": "Overwrite the cached training and evaluation sets"}
     )
+    wandb_name: str = field(
+        default=None, metadata={'help': "Name of Wandb runs"},
+    )
 
 
 def main():
@@ -105,6 +110,8 @@ def main():
         model_args, data_args, training_args = parser.parse_json_file(json_file=os.path.abspath(sys.argv[1]))
     else:
         model_args, data_args, training_args = parser.parse_args_into_dataclasses()
+
+    wandb.init(project="bio-saliency", name=data_args.wandb_name)
 
     if (
         os.path.exists(training_args.output_dir)
@@ -136,7 +143,7 @@ def main():
     set_seed(training_args.seed)
 
     # Prepare CONLL-2003 task
-    labels = get_labels(data_args.labels)
+    labels = get_bio_labels(data_args.labels)
     label_map: Dict[int, str] = {i: label for i, label in enumerate(labels)}
     num_labels = len(labels)
 
@@ -158,7 +165,8 @@ def main():
         cache_dir=model_args.cache_dir,
         use_fast=model_args.use_fast,
     )
-    model = AutoModelForTokenClassification.from_pretrained(
+    model = BioNER.from_pretrained(
+    # model = AutoModelForTokenClassification.from_pretrained(
         model_args.model_name_or_path,
         from_tf=bool(".ckpt" in model_args.model_name_or_path),
         config=config,
