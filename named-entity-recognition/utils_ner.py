@@ -135,8 +135,8 @@ if is_torch_available():
                         data_type=mode.value,
                         is_pmi=is_pmi,
                     )
-                    logger.info(f"Saving features into cached file {cached_features_file}")
-                    torch.save(self.features, cached_features_file)
+                    # logger.info(f"Saving features into cached file {cached_features_file}")
+                    # torch.save(self.features, cached_features_file)
                 
         def __len__(self):
             return len(self.features)
@@ -406,9 +406,9 @@ def convert_examples_to_features(
         assert len(label_ids) == max_seq_length
 
         if 'train' in data_type:
-            data_type = [1]
+            data_type_ids = [1] * max_seq_length
         else:
-            data_type = [0]
+            data_type_ids = [0] * max_seq_length
 
         if ex_index < 5:
             logger.info("*** Example ***")
@@ -418,6 +418,7 @@ def convert_examples_to_features(
             logger.info("input_mask: %s", " ".join([str(x) for x in input_mask]))
             logger.info("segment_ids: %s", " ".join([str(x) for x in segment_ids]))
             logger.info("label_ids: %s", " ".join([str(x) for x in label_ids]))
+            logger.info("data_type_ids: %s", " ".join([str(x) for x in data_type_ids]))
 
         if "token_type_ids" not in tokenizer.model_input_names:
             segment_ids = None
@@ -425,7 +426,7 @@ def convert_examples_to_features(
         features.append(
             InputFeatures(
                 input_ids=input_ids, attention_mask=input_mask, token_type_ids=segment_ids, \
-                label_ids=label_ids, bias_tensor=word_class_tensor, data_type=data_type
+                label_ids=label_ids, bias_tensor=word_class_tensor, data_type=data_type_ids,
             )
         )
     # with open('/home/minbyul/github/biobert-pytorch/datasets/NER/%s/%s-class_distribution.json' % (data_name, data_type), 'w') as out_:
