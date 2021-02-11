@@ -314,3 +314,51 @@ class BioNER(BertForTokenClassification):
                 return loss
         else:
             return logits
+
+class GeneralNER(BertForTokenClassification):
+    def __init__(self, config, num_labels=9, random_bias=False, freq_bias=False, pmi_bias=True):
+        super(GeneralNER, self).__init__(config)
+        self.num_labels = num_labels
+        self.bert = BertModel(config)
+        self.dropout = torch.nn.Dropout(config.hidden_dropout_prob)
+        self.classifier = torch.nn.Linear(config.hidden_size, self.num_labels)
+        self.random_bias = random_bias
+        self.freq_bias = freq_bias
+        self.pmi_bias = pmi_bias
+        self.init_weights()
+
+    def forward(self, input_ids, token_type_ids=None, attention_mask=None, labels=None, bias_tensor=None, data_type=None):
+        sequence_output = self.bert(input_ids, token_type_ids, attention_mask, head_mask=None)[0]
+        batch_size,max_len,feat_dim = sequence_output.shape
+        sequence_output = self.dropout(sequence_output)
+
+        logits = self.classifier(sequence_output)
+        
+        if data_type[0][0].item() == 1:
+            if self.random_bias:
+                rand_logits = torch.rand(batch_size, max_len, self.num_labels).cuda()
+                logits = logits + rand_logits
+            elif self.freq_bias or self.pmi_bias:
+                logits = logits + bias_tensor
+        
+        outputs = (logits, sequence_output)
+        if labels is not None:
+            loss_fct = CrossEntropyLoss()
+            # Only keep active parts of the loss
+            if attention_mask is not None:
+                # active_loss = attention_mask.view(-1) == 1
+                # active_logits = logits.view(-1, self.num_labels)[active_loss]
+                # active_labels = labels.view(-1)[active_loss]
+                # loss = loss_fct(active_logits, active_labels)
+                active_loss = attention_mask.view(-1) == 1
+                active_logits = logits.view(-1, self.num_labels)
+                active_labels = torch.where(
+                    active_loss, labels.view(-1), torch.tensor(loss_fct.ignore_index).type_as(labels)
+                )
+                loss = loss_fct(active_logits, active_labels)
+                return ((loss,) + outputs)
+            else:
+                loss = loss_fct(logits.view(-1, self.num_labels), labels.view(-1))
+                return loss
+        else:
+            return logits

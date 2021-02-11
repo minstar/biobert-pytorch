@@ -41,7 +41,7 @@ from transformers import (
     set_seed,
 )
 import wandb
-from utils_ner import NerDataset, Split, get_bio_labels, get_labels
+from utils_ner import NerDataset, get_bio_labels, Split_mem, Split_syn, Split_con, Split_seen, Split_unseen
 from modeling import *
 
 logger = logging.getLogger(__name__)
@@ -99,11 +99,8 @@ class DataTrainingArguments:
     is_pmi: bool = field(
         default=False, metadata={'help': "To use Pointwise Mututal Information in debiasing"}
     )
-    smooth: int = field(
-        default=1,
-        metadata={
-            "help": "smoothing hyparameter to make word frequency more discriminative"
-        },
+    eval_data_name: str = field(
+        default="mem", metadata={'help': "Evaluation oo Memorization, Synonym, Concept, Seen, and Unseen"}
     )
 
 
@@ -152,12 +149,7 @@ def main():
     set_seed(training_args.seed)
 
     # Prepare CONLL-2003 task
-    entity_name = data_args.data_dir.split('/')[-1]
-    if entity_name in ["CoNLL2003NER", "OntoNotes5.0", "WNUT2017"]:
-        labels = get_labels(data_args.labels)
-    else:
-        labels = get_bio_labels(data_args.labels)
-
+    labels = get_bio_labels(data_args.labels)
     label_map: Dict[int, str] = {i: label for i, label in enumerate(labels)}
     num_labels = len(labels)
 
@@ -179,23 +171,13 @@ def main():
         cache_dir=model_args.cache_dir,
         use_fast=model_args.use_fast,
     )
-    if entity_name in ["CoNLL2003NER", "OntoNotes5.0", "WNUT2017"]:
-        model = GeneralNER.from_pretrained(
-                model_args.model_name_or_path,
-                from_tf=bool(".ckpt" in model_args.model_name_or_path),
-                num_labels=num_labels,
-                config=config,
-                cache_dir=model_args.cache_dir,
-        )
-    else:
-        model = BioNER.from_pretrained(
-        # model = AutoModelForTokenClassification.from_pretrained(
-            model_args.model_name_or_path,
-            from_tf=bool(".ckpt" in model_args.model_name_or_path),
-            num_labels=num_labels,
-            config=config,
-            cache_dir=model_args.cache_dir,
-        )
+    model = BioNER.from_pretrained(
+    # model = AutoModelForTokenClassification.from_pretrained(
+        model_args.model_name_or_path,
+        from_tf=bool(".ckpt" in model_args.model_name_or_path),
+        config=config,
+        cache_dir=model_args.cache_dir,
+    )
     '''
     model_to_save = AutoModel.from_pretrained(
         model_args.model_name_or_path,
@@ -208,6 +190,17 @@ def main():
     import pdb; pdb.set_trace()
     '''
 
+    if data_args.eval_data_name == 'mem':
+        Split = Split_mem
+    elif data_args.eval_data_name == 'syn':
+        Split = Split_syn
+    elif data_args.eval_data_name == 'con':
+        Split = Split_con
+    elif data_args.eval_data_name == 'seen':
+        Split = Split_seen
+    elif data_args.eval_data_name == 'unseen':
+        Split = Split_unseen
+        
     # Get datasets
     train_dataset = (
         NerDataset(
@@ -219,7 +212,6 @@ def main():
             overwrite_cache=data_args.overwrite_cache,
             mode=Split.train,
             is_pmi=data_args.is_pmi,
-            smooth_param=data_args.smooth,
         )
         if training_args.do_train
         else None
@@ -234,7 +226,7 @@ def main():
             overwrite_cache=data_args.overwrite_cache,
             mode=Split.dev,
             is_pmi=data_args.is_pmi,
-            smooth_param=data_args.smooth,
+            eval_data_name=data_args.eval_data_name,
         )
         if training_args.do_eval
         else None
@@ -314,7 +306,7 @@ def main():
             overwrite_cache=data_args.overwrite_cache,
             mode=Split.test,
             is_pmi=data_args.is_pmi,
-            smooth_param=data_args.smooth,
+            eval_data_name=data_args.eval_data_name,
         )
 
         predictions, label_ids, metrics = trainer.predict(test_dataset)
@@ -336,7 +328,7 @@ def main():
         output_test_predictions_file = os.path.join(training_args.output_dir, "test_predictions.txt")
         if trainer.is_world_master():
             with open(output_test_predictions_file, "w") as writer:
-                with open(os.path.join(data_args.data_dir, "test.txt"), "r") as f:
+                with open(os.path.join(data_args.data_dir, "test_%s.txt" % data_args.eval_data_name), "r") as f:
                     example_id = 0
                     for line in f:
                         if line.startswith("-DOCSTART-") or line == "" or line == "\n":
@@ -345,10 +337,11 @@ def main():
                                 example_id += 1
                         elif preds_list[example_id]:
                             entity_label = preds_list[example_id].pop(0)
-                            if entity_name == 'WNUT2017':
-                                output_line = line.split()[0] + "\t" + line.split()[1] + "\t" + entity_label + "\n"
-                            else:
+                            if entity_label == 'O':
                                 output_line = line.split()[0] + " " + entity_label + "\n"
+                            else:
+                                output_line = line.split()[0] + " " + entity_label[0] + "\n"
+                            # output_line = line.split()[0] + " " + preds_list[example_id].pop(0) + "\n"
                             writer.write(output_line)
                         else:
                             logger.warning(
